@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context="com.example.slotr.inventory.AddActivity">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="200dp"
+        android:layout_gravity="center"
+        android:background="@drawable/no_image"
+        android:layout_height="200dp" />
+
+    <Button
+        android:id="@+id/upload_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Upload"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:text="Product"/>
+
+        <EditText
+            android:id="@+id/name_edit_text"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            android:hint="name"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:text="Price" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="£"/>
+
+        <EditText
+            android:id="@+id/price_edit_text"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:inputType="number" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:text="Category"/>
+
+        <Spinner
+            android:id="@+id/spinner_view"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+        </Spinner>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="125dp"
+            android:layout_height="wrap_content"
+            android:text="Quantity" />
+
+        <EditText
+            android:id="@+id/quantity_edit_text"
+            android:layout_width="225dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="" />
+    </LinearLayout>
+</LinearLayout>
