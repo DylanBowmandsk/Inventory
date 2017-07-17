@@ -1,14 +1,21 @@
 package com.example.slotr.inventory;
 
+import android.Manifest;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,14 +43,16 @@ public class DetailActivity extends AppCompatActivity {
     int quantity;
     int id;
     Uri uri;
+    Uri imageUri;
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_detail,menu);
+        getMenuInflater().inflate(R.menu.menu_detail, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,20 +88,22 @@ public class DetailActivity extends AppCompatActivity {
         final int price = cursor.getInt(priceIndex);
         quantity = cursor.getInt(quantityIndex);
         id = cursor.getInt(idIndex);
-        Uri imageUri = Uri.parse(cursor.getString(imageIndex));
+        imageUri = Uri.parse(cursor.getString(imageIndex));
 
         //fill  views
         nameView.setText(name);
         priceView.append(price + "");
         quantityView.setText(quantity + "");
         categoryView.setText(category);
-        imageView.setImageURI(imageUri);
+        Log.v("tester", imageUri + "");
+        addImage();
+
 
         //decrement quantity listener
         decrementView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(quantity > 0) {
+                if (quantity > 0) {
                     quantity--;
                     quantityView.setText(quantity + "");
                     ContentValues values = new ContentValues();
@@ -108,8 +119,8 @@ public class DetailActivity extends AppCompatActivity {
                 quantity++;
                 quantityView.setText(quantity + "");
                 ContentValues values = new ContentValues();
-                values.put(StockContract.StockEntry.COLUMN_QUANTITY,quantity);
-                int affectedRows = getContentResolver().update(uri,values,null,null);
+                values.put(StockContract.StockEntry.COLUMN_QUANTITY, quantity);
+                int affectedRows = getContentResolver().update(uri, values, null, null);
 
             }
         });
@@ -120,20 +131,20 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.delete){
+        if (id == R.id.delete) {
             AlertDialog alert = createDialog();
             alert.setTitle("Delete");
             alert.show();
             return true;
         }
-        if (id == R.id.order){
+        if (id == R.id.order) {
             Intent i = new Intent(Intent.ACTION_SENDTO);
             i.setData(Uri.parse("mailto:"));
             i.putExtra(Intent.EXTRA_TEXT, "details here");
             startActivity(Intent.createChooser(i, "Fake Email"));
             return true;
         }
-        if (id == R.id.home){
+        if (id == R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
             return true;
         }
@@ -141,16 +152,15 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void deleteEntry() {
-       int index =  getContentResolver().delete(StockContract.StockEntry.CONTENT_URI, StockContract.StockEntry.COLUMN_ID+"=?",new String[] {id+""});
-        if (index == -1){
-            Toast.makeText(getBaseContext(),"Could Not Delete",Toast.LENGTH_SHORT);
-        }
-        else {
-            Toast.makeText(getBaseContext(),"Deleted entry "+ index,Toast.LENGTH_SHORT);
+        int index = getContentResolver().delete(StockContract.StockEntry.CONTENT_URI, StockContract.StockEntry.COLUMN_ID + "=?", new String[]{id + ""});
+        if (index == -1) {
+            Toast.makeText(getBaseContext(), "Could Not Delete", Toast.LENGTH_SHORT);
+        } else {
+            Toast.makeText(getBaseContext(), "Deleted entry " + index, Toast.LENGTH_SHORT);
         }
     }
 
-    public AlertDialog createDialog(){
+    public AlertDialog createDialog() {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(DetailActivity.this);
         dialog.setCancelable(true);
         dialog.setMessage("Are you sure");
@@ -168,6 +178,37 @@ public class DetailActivity extends AppCompatActivity {
         });
         return dialog.create();
     }
+
+    public void addImage() {
+        if (ContextCompat.checkSelfPermission(DetailActivity.this,
+                Manifest.permission.MANAGE_DOCUMENTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(DetailActivity.this,
+                    new String[]{Manifest.permission.MANAGE_DOCUMENTS}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    imageView.setImageBitmap(bitmap);
+                    break;
+
+                } else {
+
+                }
+                return;
+            }
+        }
+
+    }
 }
-
-
